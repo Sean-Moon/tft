@@ -7,6 +7,8 @@ except ImportError:
     from urlparse import urljoin
 #from .public_api import PublicAPI
 
+import pymongo
+
 class PublicAPI:
     def __init__(self, production=True, version="v1", timeout=20):
         self.__host = production and "https://api.korbit.co.kr/%s/" % version \
@@ -84,15 +86,26 @@ list_of_filled_orders = __public.list_of_filled_orders
 
 print(ticker())
 print(detailed_ticker())
-print(all_detailed_ticker())
+#print(all_detailed_ticker())
 #print(orderbook())
 #print(asks_orderbook())
 #print(bids_orderbook())
 #print(list_of_filled_orders())
+ 
+conn = pymongo.MongoClient('mongodb://root:root@220.90.208.81:27017/root?authSource=root')
+ 
+#db = conn.root # AAA라는 이름의 데이터베이스 생성
+#collection  = db.korbit # test라는 이름의 테이블 생성
+db = conn.get_database('root') # 데이터베이스 선택
+collection = db.get_collection('korbit') # 테이블 선택
+ 
+## 예시
+collection.insert(all_detailed_ticker()) # 선택된 컬렉션에 키가 number, 값이 0인 데이터 저장
+
 
 import requests
 import datetime
-import pandas as pd
+#import pandas as pd
 
 
 def get_ohlc(symbol="BTC", timeunit="day", start=None, end=None, period=None):
@@ -177,4 +190,4 @@ def get_ohlc(symbol="BTC", timeunit="day", start=None, end=None, period=None):
 
 # # minute
 #print(get_ohlc(symbol="BTC", timeunit='minute'))
-print(get_ohlc(symbol="BTC", timeunit='minute', period=5))
+# print(get_ohlc(symbol="BTC", timeunit='minute', period=5))
